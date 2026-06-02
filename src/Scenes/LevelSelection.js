@@ -1,6 +1,6 @@
-class Start extends Phaser.Scene {
+class Selection extends Phaser.Scene {
     constructor() {
-        super("startScene");
+        super("selectionScene");
     }
 
     init() {
@@ -21,11 +21,10 @@ class Start extends Phaser.Scene {
 
 
         //text
-        my.text.GRABity = this.add.bitmapText(game.config.width/2, game.config.height/2 - 48,"kenneySquare", `GRABity!`, 64).setOrigin(0.5);
-        my.text.GRABity = this.add.bitmapText(game.config.width/2, game.config.height/2,"kenneySquare", `Rebounded`, 32).setOrigin(0.5);
+        my.text.Levels = this.add.bitmapText(game.config.width/2, game.config.height/2 - 48,"kenneySquare", "Level Selection", 48).setOrigin(0.5);
 
-        this.drawLink("levels", game.config.width/2, game.config.height/2 + 96, "selectionScene");
-        this.drawLink("credits", game.config.width/2, game.config.height/2 + 120, "creditsScene");
+        this.drawLink("Level 1", game.config.width/2, game.config.height/2 + 96, "platformerScene");
+        this.drawLink("back", game.config.width/2, game.config.height/2 + 120, "startScene");
 
     }
 
