@@ -31,66 +31,11 @@ class Platformer extends Phaser.Scene {
         this.sound.setVolume(0.25);
 
         //draws all the layers on the layer's tilemap
-       this.drawMap();
+       this.createMap();
 
-        //make gems
-        this.gems = this.map.createFromObjects("Gems", {
-            name: "Gem",
-            key: "tilemap_sheet",
-            frame: 82
-        });
-        this.physics.world.enable(this.gems, Phaser.Physics.Arcade.STATIC_BODY);
-        //scale up and reposition
-        this.gems.forEach(gem => {
-            gem.setScale(SCALE);
-
-            // scale position to match scaled map
-            gem.x *= SCALE;
-            gem.y *= SCALE;
-
-            gem.body.updateFromGameObject();
-        });
-        this.gemGroup = this.add.group(this.gems);
-        this.totalGems = this.gemGroup.getLength();
-        this.grabbedGems = 0;
-        //animations for gems
-        this.anims.create({
-            key: 'gemAnim', // Animation key
-            frames: this.anims.generateFrameNumbers('tilemap_sheet', 
-                {
-                    prefix: '',
-                    suffix: '',
-                    zeroPad: 0,
-                    frames: [82,62]
-                    // outputArray: [], // Append frames into this array
-                }),
-            frameRate: 3,  // Higher is faster
-            repeat: -1      // Loop the animation indefinitely
-        });
-        this.anims.play('gemAnim', this.gems);
-
-        //make Spikes
-        this.spikes = this.map.createFromObjects("Spikes", {
-            name: "Spike",
-            key: "tilemap_sheet", 
-            frame: 166
-        });
-        this.physics.world.enable(this.spikes, Phaser.Physics.Arcade.STATIC_BODY);
-        //scale up and reposition
-        this.spikes.forEach(spike => {
-            spike.setScale(SCALE);
-
-            // scale position to match scaled map
-            spike.x *= SCALE;
-            spike.y *= SCALE;
-            spike.body.updateFromGameObject();
-
-            //scale down hitbox
-            spike.body.setSize(spike.width*SCALE*0.5, spike.height*SCALE*0.5, true);
-            spike.body.setOffset(4*SCALE,4*SCALE);
-        });
-
-        this.spikeGroup = this.add.group(this.spikes);
+       //make all the objects like gems/spikes etc.
+       this.createObjects();
+      
 
 
         // Make layers collidable
@@ -143,48 +88,7 @@ class Platformer extends Phaser.Scene {
         }, this);
 
         //particles
-        this.jumpVFX = this.add.particles(0, 0, "circleParticle", {
-            frame: 0,
-            blendMode: 'ADD', 
-            radial: true,
-            angle: {min: 0, max: 180},
-            random: true,
-            scale: {start: 0.1, end: 0.01},
-            frequency: 1,
-            maxAliveParticles: 10,
-            lifespan: 500,
-            speed: 50,
-            alpha: {start: 1, end: 0.5}, 
-            duration: 100
-        });
-        this.jumpVFX.stop();
-
-        this.walkVFX = this.add.particles(0, 0, "circleParticle", {
-            frame: 0,
-            blendMode: 'ADD',
-            random: true,
-            scale: {start: 0.05, end: 0.01},
-            frequency: 100,
-            lifespan: 1000,
-            alpha: {start: 1, end: 0.5}
-        });
-        this.walkVFX.stop();
-
-        this.gemVFX = this.add.particles(0, 0, "starParticle", {
-            frame: 0,
-            blendMode: 'ADD',
-            random: true,
-            radial: true,
-            angle: {min: 0, max: 360},
-            scale: 0.075,
-            frequency: 1,
-            maxAliveParticles: 20,
-            lifespan: 500,
-            speed: 100,
-            alpha: {start: 0.5, end: 0}, 
-            duration: 100
-        });
-        this.gemVFX.stop();
+       this.createParticles();
 
         //text
         my.text.gemCount = this.add.bitmapText(10, 10 ,"kenneySquare", `Gems: ${this.grabbedGems} / ${this.totalGems}`);
@@ -370,7 +274,7 @@ class Platformer extends Phaser.Scene {
     }
 
     //draws the layers from the tilemap
-    drawMap(){
+    createMap(){
         // Create a new tilemap game object which uses 16x16 pixel tiles, and is
         // 60 tiles wide and 15 tiles tall.
         this.map = this.add.tilemap("level-1", 16, 16, 60, 15);
@@ -387,17 +291,14 @@ class Platformer extends Phaser.Scene {
         // this.bg1Layer.setAlpha(0.25);
         // this.bg1Layer.setScrollFactor(0.25); //parallax effect
 
-        this.bg1Layer = this.drawTileLayer("Background2", this.tilesetBlack, 0.33, 0.5);
+        this.bg1Layer = this.createTileLayer("Background2", this.tilesetBlack, 0.33, 0.5);
 
-        // platform layers
-        // this.platformLayer = this.map.createLayer("Platforms", this.tilesetBlack, 0, 0);
-        // this.platformLayer.setScale(SCALE);
-        this.platformLayer = this.drawTileLayer("Platforms", this.tilesetBlack);
+        this.platformLayer = this.createTileLayer("Platforms", this.tilesetBlack);
 
-        this.decorLayer = this.drawTileLayer("Decor", this.tileset);
+        this.decorLayer = this.createTileLayer("Decor", this.tileset);
     }
-    //draws tile layer from tilemap using the name and the tileset used
-    drawTileLayer(name, tileset, alpha = 1, scrollFactor = 1){
+    //returns a set-up tile layer from tilemap using the name and the tileset used
+    createTileLayer(name, tileset, alpha = 1, scrollFactor = 1){
 
         let layer = this.map.createLayer(name, tileset, 0, 0);
         layer.setScale(SCALE);
@@ -405,6 +306,111 @@ class Platformer extends Phaser.Scene {
         layer.setScrollFactor(scrollFactor); //parallax effect
 
         return layer;
+    }
+
+    createObjects(){
+ //make gems
+        this.gems = this.map.createFromObjects("Gems", {
+            name: "Gem",
+            key: "tilemap_sheet",
+            frame: 82
+        });
+        this.physics.world.enable(this.gems, Phaser.Physics.Arcade.STATIC_BODY);
+        //scale up and reposition
+        this.gems.forEach(gem => {
+            gem.setScale(SCALE);
+
+            // scale position to match scaled map
+            gem.x *= SCALE;
+            gem.y *= SCALE;
+
+            gem.body.updateFromGameObject();
+        });
+        this.gemGroup = this.add.group(this.gems);
+        this.totalGems = this.gemGroup.getLength();
+        this.grabbedGems = 0;
+        //animations for gems
+        this.anims.create({
+            key: 'gemAnim', // Animation key
+            frames: this.anims.generateFrameNumbers('tilemap_sheet', 
+                {
+                    prefix: '',
+                    suffix: '',
+                    zeroPad: 0,
+                    frames: [82,62]
+                    // outputArray: [], // Append frames into this array
+                }),
+            frameRate: 3,  // Higher is faster
+            repeat: -1      // Loop the animation indefinitely
+        });
+        this.anims.play('gemAnim', this.gems);
+
+        //make Spikes
+        this.spikes = this.map.createFromObjects("Spikes", {
+            name: "Spike",
+            key: "tilemap_sheet", 
+            frame: 166
+        });
+        this.physics.world.enable(this.spikes, Phaser.Physics.Arcade.STATIC_BODY);
+        //scale up and reposition
+        this.spikes.forEach(spike => {
+            spike.setScale(SCALE);
+
+            // scale position to match scaled map
+            spike.x *= SCALE;
+            spike.y *= SCALE;
+            spike.body.updateFromGameObject();
+
+            //scale down hitbox
+            spike.body.setSize(spike.width*SCALE*0.5, spike.height*SCALE*0.5, true);
+            spike.body.setOffset(4*SCALE,4*SCALE);
+        });
+
+        this.spikeGroup = this.add.group(this.spikes);
+    }
+
+    createParticles(){
+        this.jumpVFX = this.add.particles(0, 0, "circleParticle", {
+            frame: 0,
+            blendMode: 'ADD', 
+            radial: true,
+            angle: {min: 0, max: 180},
+            scale: {start: 0.2, end: 0.1},
+            frequency: 1,
+            maxAliveParticles: 10,
+            lifespan: {min: 300, max: 500},
+            speed: {min: 40, max: 60},
+            alpha: {start: 1, end: 0.5}, 
+            duration: 100
+        });
+        this.jumpVFX.stop();
+
+        this.walkVFX = this.add.particles(0, 0, "circleParticle", {
+            frame: 0,
+            blendMode: 'ADD',
+            random: true,
+            scale: {start: 0.2, end: 0.1},
+            frequency: 100,
+            lifespan: 1000,
+            alpha: {start: 1, end: 0.5}
+        });
+        this.walkVFX.stop();
+
+        this.gemVFX = this.add.particles(0, 0, "starParticle", {
+            frame: 0,
+            blendMode: 'ADD',
+            random: true,
+            radial: true,
+            angle: {min: 0, max: 360},
+            scale: 0.075,
+            frequency: 1,
+            maxAliveParticles: 20,
+            lifespan: 500,
+            speed: 100,
+            alpha: {start: 0.5, end: 0}, 
+            duration: 100
+        });
+        this.gemVFX.stop();
     }
 
 }
