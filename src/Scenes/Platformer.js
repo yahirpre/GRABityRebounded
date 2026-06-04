@@ -27,36 +27,11 @@ class Platformer extends Phaser.Scene {
     }
 
     create() {
+        //set volume
         this.sound.setVolume(0.25);
-        // Create a new tilemap game object which uses 18x18 pixel tiles, and is
-        // 45 tiles wide and 25 tiles tall.
-        this.map = this.add.tilemap("level-1", 16, 16, 60, 15);
 
-        // Add a tileset to the map
-        // First parameter: name we gave the tileset in Tiled
-        // Second parameter: key for the tilesheet (from this.load.image in Load.js)
-        this.tileset = this.map.addTilesetImage("monochrome_tilemap_transparent_packed", "tilemap_tiles");
-        this.tilesetBlack = this.map.addTilesetImage("monochrome_tilemap_packed", "tilemap_tiles_black");
-
-        //BACKGROUNDS
-        // this.bg1Layer = this.map.createLayer("Background1", this.tileset, 0, 0);
-        // this.bg1Layer.setScale(SCALE);
-        // this.bg1Layer.setAlpha(0.25);
-        // this.bg1Layer.setScrollFactor(0.25); //parallax effect
-
-
-        this.bg2Layer = this.map.createLayer("Background2", this.tilesetBlack, 0, 0);
-        this.bg2Layer.setScale(SCALE);
-        this.bg2Layer.setAlpha(0.33);
-        this.bg2Layer.setScrollFactor(0.5); //parallax effect
-
-        // platform layers
-        this.platformLayer = this.map.createLayer("Platforms", this.tilesetBlack, 0, 0);
-        this.platformLayer.setScale(SCALE);
-
-        this.decorLayer = this.map.createLayer("Decor", this.tileset, 0, 0);
-        this.decorLayer.setScale(SCALE);
-
+        //draws all the layers on the layer's tilemap
+       this.drawMap();
 
         //make gems
         this.gems = this.map.createFromObjects("Gems", {
@@ -233,6 +208,11 @@ class Platformer extends Phaser.Scene {
         });
 
         this.animatedTiles.init(this.map);
+
+        //particles
+        this.jumpVFX.startFollow(my.sprite.player, 0, 0, false);
+        this.gemVFX.startFollow(my.sprite.player, 0, 0, false);
+        this.walkVFX.startFollow(my.sprite.player, 0, 0, false);
     }
 
     //TODO:
@@ -264,11 +244,6 @@ class Platformer extends Phaser.Scene {
                 my.sprite.player.anims.play('idle');
                 this.walkVFX.stop();
             }
-
-            //particles
-            this.jumpVFX.startFollow(my.sprite.player, 0, 0, false);
-            this.gemVFX.startFollow(my.sprite.player, 0, 0, false);
-            this.walkVFX.startFollow(my.sprite.player, 0, 0, false);
 
 
             //check is no lives left
@@ -392,6 +367,44 @@ class Platformer extends Phaser.Scene {
         my.text.gameOver = this.add.bitmapText(game.config.width/2, game.config.height/2,"kenneySquare", text).setOrigin(0.5);
         my.text.gameOver.setScrollFactor(0);
         this.time.delayedCall(time*1000, () =>{this.scene.restart();}, [], this);
+    }
+
+    //draws the layers from the tilemap
+    drawMap(){
+        // Create a new tilemap game object which uses 16x16 pixel tiles, and is
+        // 60 tiles wide and 15 tiles tall.
+        this.map = this.add.tilemap("level-1", 16, 16, 60, 15);
+
+        // Add a tileset to the map
+        // First parameter: name we gave the tileset in Tiled
+        // Second parameter: key for the tilesheet (from this.load.image in Load.js)
+        this.tileset = this.map.addTilesetImage("monochrome_tilemap_transparent_packed", "tilemap_tiles");
+        this.tilesetBlack = this.map.addTilesetImage("monochrome_tilemap_packed", "tilemap_tiles_black");
+
+        //BACKGROUNDS
+        // this.bg1Layer = this.map.createLayer("Background1", this.tileset, 0, 0);
+        // this.bg1Layer.setScale(SCALE);
+        // this.bg1Layer.setAlpha(0.25);
+        // this.bg1Layer.setScrollFactor(0.25); //parallax effect
+
+        this.bg1Layer = this.drawTileLayer("Background2", this.tilesetBlack, 0.33, 0.5);
+
+        // platform layers
+        // this.platformLayer = this.map.createLayer("Platforms", this.tilesetBlack, 0, 0);
+        // this.platformLayer.setScale(SCALE);
+        this.platformLayer = this.drawTileLayer("Platforms", this.tilesetBlack);
+
+        this.decorLayer = this.drawTileLayer("Decor", this.tileset);
+    }
+    //draws tile layer from tilemap using the name and the tileset used
+    drawTileLayer(name, tileset, alpha = 1, scrollFactor = 1){
+
+        let layer = this.map.createLayer(name, tileset, 0, 0);
+        layer.setScale(SCALE);
+        layer.setAlpha(alpha);
+        layer.setScrollFactor(scrollFactor); //parallax effect
+
+        return layer;
     }
 
 }

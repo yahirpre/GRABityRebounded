@@ -43,7 +43,7 @@ class Load extends Phaser.Scene {
     create() {
         //html text
         document.getElementById('description').innerHTML = '<h2>GRABity!</h2>';
-        document.getElementById('controls').innerHTML = '<h3>Controls:</h3><p>A/D - Left/Right Movement<br>SPACE - Jump/Double Jump<br>Left Click - Flip Gravity (Once until landed)</p>';
+        document.getElementById('controls').innerHTML = '<h3>Controls:</h3><p>A/D - Left/Right Movement<br>SPACE - Jump/Double Jump<br>Left Click - Flip Gravity (Once until landed)<br>R - Restart Level</p>';
 
         this.anims.create({
             key: 'walk',
