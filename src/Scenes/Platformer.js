@@ -35,8 +35,6 @@ class Platformer extends Phaser.Scene {
 
        //make all the objects like gems/spikes etc.
        this.createObjects();
-      
-
 
         // Make layers collidable
         this.platformLayer.setCollisionByProperty({
@@ -47,7 +45,7 @@ class Platformer extends Phaser.Scene {
         my.sprite.player = this.physics.add.sprite(80, 400, "idle").setScale(SCALE)
         my.sprite.player.setCollideWorldBounds(true);
 
-        //set world boundsd
+        //set world bounds
         this.physics.world.setBounds(0, -50, this.map.widthInPixels * SCALE, this.map.heightInPixels * SCALE + 100);
 
         //set max velocity
@@ -60,63 +58,21 @@ class Platformer extends Phaser.Scene {
         this.cameras.main.setBounds(0, 0, this.map.widthInPixels*SCALE, this.map.heightInPixels*SCALE);
         this.cameras.main.startFollow(my.sprite.player, true, 0.1, 0);
 
-        //keys
-        this.AKey = this.input.keyboard.addKey("A"); //left
-        this.DKey = this.input.keyboard.addKey("D"); //right
-        this.RKey = this.input.keyboard.addKey("R"); //restart scene
-        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE); //jump
-
         this.physics.world.drawDebug = false;
         this.physics.world.debugGraphic.clear();
-        // debug key listener (assigned to Q key)
-        this.input.keyboard.on('keydown-Q', () => {
-            this.physics.world.drawDebug = this.physics.world.drawDebug ? false : true
-            this.physics.world.debugGraphic.clear()
-        }, this);
-        this.physics.world.debugGraphic.clear();
 
-        //on mouse down, flip gravity if adble to
-        this.input.on('pointerdown', function (pointer)
-        {
-            if(this.flipAbility){
-                this.sound.play("flip");
-                this.flipGravity();
-                this.flipAbility = false;
-            }
-
-
-        }, this);
+        //make the keys and pointer inputs + callback functions
+        this.createInput();
 
         //particles
-       this.createParticles();
+        this.createParticles();
 
-        //text
-        my.text.gemCount = this.add.bitmapText(10, 10 ,"kenneySquare", `Gems: ${this.grabbedGems} / ${this.totalGems}`);
-        my.text.gemCount.setScrollFactor(0); //stops text from scrolling
-        my.text.lives = this.add.bitmapText(10, 40 ,"kenneySquare", `Lives: ${this.lives}`);
-        my.text.lives.setScrollFactor(0); //stops text from scrolling
+        this.createOverlap();
 
-        //add gem overlap
-        this.physics.add.overlap(my.sprite.player, this.gemGroup, (obj1, obj2) => {
-            obj2.destroy(); // remove gem on overlap
-            this.grabbedGems++; //increment grabbedGems
-            //update text
-            my.text.gemCount.setText(`Gems: ${this.grabbedGems} / ${this.totalGems}`);
-            this.sound.play("gemGrab");
-            this.gemVFX.start();
-        });
-
-        //add spike overlap
-        this.physics.add.overlap(my.sprite.player, this.spikeGroup, (obj1, obj2) => {
-            this.playerDead();
-        });
+        this.createTextUI();
 
         this.animatedTiles.init(this.map);
 
-        //particles
-        this.jumpVFX.startFollow(my.sprite.player, 0, 0, false);
-        this.gemVFX.startFollow(my.sprite.player, 0, 0, false);
-        this.walkVFX.startFollow(my.sprite.player, 0, 0, false);
     }
 
     //TODO:
@@ -153,7 +109,7 @@ class Platformer extends Phaser.Scene {
             //check is no lives left
             if(this.lives < 0){
                 this.sound.play("gameOver");
-                this.endScreen("Game Over!", 3)
+                this.endScreen("Game Over!", 3, this.scene.key)
             }
 
             //if player out of bounds
@@ -168,13 +124,13 @@ class Platformer extends Phaser.Scene {
                 this.levelCompleted = true; //prevents this block from being executed more than once
                 this.time.delayedCall(2000, () => {
                     this.sound.play("levelComplete");
-                    this.endScreen("Level Completed!", 3);
+                    this.endScreen("Level Completed!", 3, "selectionScene");
                 })
             }
 
             //restart scene
             if(Phaser.Input.Keyboard.JustDown(this.RKey)){
-                this.endScreen("Restarting!", 1);
+                this.endScreen("Restarting!", 1, this.scene.key);
             }
 
             // player jump
@@ -219,6 +175,10 @@ class Platformer extends Phaser.Scene {
         this.physics.world.gravity.y *= -1; //flip gravity
         this.JUMP_VELOCITY *= -1; //flip jump velocity
 
+        //flip VFX
+        this.jumpVFX.setEmitterAngle(-180);
+        
+
         my.sprite.player.toggleFlipY(); //flip player sprite
     }
 
@@ -254,7 +214,8 @@ class Platformer extends Phaser.Scene {
 
     //text: text that will be displayed on screen 
     //time: time (in secs) until the scene restarts
-    endScreen(text, time){
+    //target: the next scene after end
+    endScreen(text, time, target){
         this.gameRunning = false;
 
         //prevent movement
@@ -270,7 +231,7 @@ class Platformer extends Phaser.Scene {
         //my.sprite.blackoutScreen.setDepth(100); //set in front of everything
         my.text.gameOver = this.add.bitmapText(game.config.width/2, game.config.height/2,"kenneySquare", text).setOrigin(0.5);
         my.text.gameOver.setScrollFactor(0);
-        this.time.delayedCall(time*1000, () =>{this.scene.restart();}, [], this);
+        this.time.delayedCall(time*1000, () =>{this.scene.start(target);}, [], this);
     }
 
     //draws the layers from the tilemap
@@ -309,7 +270,7 @@ class Platformer extends Phaser.Scene {
     }
 
     createObjects(){
- //make gems
+        //make gems
         this.gems = this.map.createFromObjects("Gems", {
             name: "Gem",
             key: "tilemap_sheet",
@@ -402,15 +363,72 @@ class Platformer extends Phaser.Scene {
             random: true,
             radial: true,
             angle: {min: 0, max: 360},
-            scale: 0.075,
+            scale: 0.1,
             frequency: 1,
-            maxAliveParticles: 20,
+            maxAliveParticles: 10,
             lifespan: 500,
             speed: 100,
-            alpha: {start: 0.5, end: 0}, 
+            alpha: {start: 0.75, end: 0}, 
             duration: 100
         });
         this.gemVFX.stop();
+
+        //set to follow player
+        this.jumpVFX.startFollow(my.sprite.player, 0, 0, false);
+        this.walkVFX.startFollow(my.sprite.player, 0, 0, false);
+    }
+
+    createInput(){
+        //keys
+        this.AKey = this.input.keyboard.addKey("A"); //left
+        this.DKey = this.input.keyboard.addKey("D"); //right
+        this.RKey = this.input.keyboard.addKey("R"); //restart scene
+        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE); //jump
+
+        // debug key listener (assigned to Q key)
+        this.input.keyboard.on('keydown-Q', () => {
+            this.physics.world.drawDebug = this.physics.world.drawDebug ? false : true
+            this.physics.world.debugGraphic.clear()
+        }, this);
+        this.physics.world.debugGraphic.clear();
+
+        //on mouse down, flip gravity if adble to
+        this.input.on('pointerdown', function (pointer)
+        {
+            if(this.flipAbility){
+                this.sound.play("flip");
+                this.flipGravity();
+                this.flipAbility = false;
+            }
+
+
+        }, this);
+    }
+
+    createOverlap(){
+        //add gem overlap
+        this.physics.add.overlap(my.sprite.player, this.gemGroup, (player, gem) => {
+            this.grabbedGems++; //increment grabbedGems
+            //update text
+            my.text.gemCount.setText(`Gems: ${this.grabbedGems} / ${this.totalGems}`);
+            this.sound.play("gemGrab");
+            this.gemVFX.explode(10, gem.x, gem.y);
+            gem.destroy(); // remove gem on overlap
+        });
+
+        //add spike overlap
+        this.physics.add.overlap(my.sprite.player, this.spikeGroup, (obj1, obj2) => {
+            this.playerDead();
+        });
+    }
+
+    createTextUI(){
+        //text
+        my.text.gemCount = this.add.bitmapText(10, 10 ,"kenneySquare", `Gems: ${this.grabbedGems} / ${this.totalGems}`);
+        my.text.gemCount.setScrollFactor(0); //stops text from scrolling
+        my.text.lives = this.add.bitmapText(10, 40 ,"kenneySquare", `Lives: ${this.lives}`);
+        my.text.lives.setScrollFactor(0); //stops text from scrolling
+
     }
 
 }
