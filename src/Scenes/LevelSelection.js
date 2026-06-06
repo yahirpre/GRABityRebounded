@@ -23,8 +23,9 @@ class Selection extends Phaser.Scene {
         //text
         my.text.Levels = this.add.bitmapText(game.config.width/2, game.config.height/2 - 48,"kenneySquare", "Level Selection", 48).setOrigin(0.5);
 
-        this.drawLink("Level 1", game.config.width/2, game.config.height/2 + 96, "platformerScene");
-        this.drawLink("back", game.config.width/2, game.config.height/2 + 120, "startScene");
+        this.drawLink("Level 1", game.config.width/2, game.config.height/2 + 96, "level1Scene");
+        this.drawLink("Level 2", game.config.width/2, game.config.height/2 + 120, "level2Scene");
+        this.drawLink("back", game.config.width/2, game.config.height/2 + 144, "startScene");
 
     }
 

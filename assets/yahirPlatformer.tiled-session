@@ -23,12 +23,26 @@
         "C:/Users/Yahir Prenger/Documents/GitHub/PlatformImprovement/assets/platformer-level-1.tmj#kenny_tilemap_packed": {
             "scaleInDock": 1
         },
+        "level-1.tmj": {
+            "scale": 1.5,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 392,
+                "y": 71.99999999999997
+            }
+        },
+        "level-1.tmj#monochrome_tilemap_packed": {
+            "scaleInDock": 1.5
+        },
+        "level-1.tmj#monochrome_tilemap_transparent_packed": {
+            "scaleInDock": 1
+        },
         "level-test.tmj": {
             "scale": 4.2926,
             "selectedLayer": 2,
             "viewCenter": {
                 "x": 34.47793877836277,
-                "y": 192.07473326189253
+                "y": 191.95825373899265
             }
         },
         "level-test.tmj#monochrome_tilemap_packed": {
@@ -41,11 +55,16 @@
     },
     "frame.defaultDuration": 1000,
     "last.imagePath": "C:/Users/Yahir Prenger/Downloads/kenney_1-bit-platformer-pack/Tilemap",
-    "map.height": 30,
+    "last.worldFilePath": "C:/Users/Yahir Prenger/Documents/GitHub/GRABityRebounded/assets",
+    "loadedWorlds": [
+        "C:/Users/Yahir Prenger/Documents/GitHub/GRABityRebounded/assets/level-1.world",
+        "C:/Users/Yahir Prenger/Documents/GitHub/GRABityRebounded/assets/level-1.world"
+    ],
+    "map.height": 15,
     "map.lastUsedFormat": "json",
     "map.tileHeight": 16,
     "map.tileWidth": 16,
-    "map.width": 90,
+    "map.width": 30,
     "openFiles": [
         "level-test.tmj"
     ],

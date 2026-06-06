@@ -32,7 +32,7 @@ let config = {
     //CANVAS SIZE (W * H): 20 TILES * 15
     width: 20 * 16 * 3, //SCALE = 3
     height: 15 * 16 * 3,
-    scene: [Load, Start, Selection, Platformer]
+    scene: [Load, Start, Selection, Level1, Level2]
 }
 
 var cursors;

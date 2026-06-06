@@ -1,6 +1,6 @@
-class Platformer extends Phaser.Scene {
+class Level2 extends Phaser.Scene {
     constructor() {
-        super("platformerScene");
+        super("level2Scene");
     }
 
     init() {
@@ -238,7 +238,7 @@ class Platformer extends Phaser.Scene {
     createMap(){
         // Create a new tilemap game object which uses 16x16 pixel tiles, and is
         // 60 tiles wide and 15 tiles tall.
-        this.map = this.add.tilemap("level-1", 16, 16, 60, 15);
+        this.map = this.add.tilemap("level-2", 16, 16, 60, 15);
 
         // Add a tileset to the map
         // First parameter: name we gave the tileset in Tiled
@@ -372,6 +372,22 @@ class Platformer extends Phaser.Scene {
             duration: 100
         });
         this.gemVFX.stop();
+
+        this.flipVFX = this.add.particles(0, 0, "starParticle", {
+            frame: 0,
+            blendMode: 'ADD',
+            random: true,
+            radial: true,
+            angle: {min: 0, max: 360},
+            scale: 0.1,
+            frequency: 1,
+            maxAliveParticles: 10,
+            lifespan: 500,
+            speed: 100,
+            alpha: {start: 0.75, end: 0}, 
+            duration: 100
+        });
+        this.flipVFX.stop();
 
         //set to follow player
         this.jumpVFX.startFollow(my.sprite.player, 0, 0, false);
