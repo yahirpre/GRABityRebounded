@@ -153,6 +153,14 @@ class Level2 extends Phaser.Scene {
                 this.sound.play("jump");
             }
 
+            //handle walkVFX
+            if(this.playerBlocked() && my.sprite.player.body.velocity.x > 0){ //if on the ground AND moving
+                this.walkVFX.start();
+            }
+            else{
+                this.walkVFX.stop();
+            }
+
             //handle TERMINAL_VELOCITY
             if(!this.gravityFlipped && my.sprite.player.body.velocity.y > this.TERMINAL_VELOCITY){
                 my.sprite.player.setVelocityY(this.TERMINAL_VELOCITY);
@@ -350,15 +358,14 @@ class Level2 extends Phaser.Scene {
         this.jumpVFX.stop();
 
         this.walkVFX = this.add.particles(0, 0, "circleParticle", {
-            frame: 0,
-            blendMode: 'ADD',
-            random: true,
-            scale: {start: 0.2, end: 0.1},
-            frequency: 100,
-            lifespan: 1000,
-            alpha: {start: 1, end: 0.5}
+            speed:      20,
+            lifespan:   1000,
+            scale:      { start: 0.15, end: 0.05 },
+            alpha:      { start: 1.0, end: 0.5 },
+            frequency:  100,                        // One particle every 100 ms
+            emitting:   false,                      // Starts OFF
+            blendMode:  "ADD"
         });
-        this.walkVFX.stop();
 
         this.gemVFX = this.add.particles(0, 0, "starParticle", {
             frame: 0,
