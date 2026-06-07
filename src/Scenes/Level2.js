@@ -189,6 +189,9 @@ class Level2 extends Phaser.Scene {
             rate: 1.5
         });
 
+        //play deathVFX
+        this.deathVFX.explode(50, my.sprite.player.x, my.sprite.player.y);
+
         this.lives--; //decrement lives
         my.text.lives.setText(`Lives: ${this.lives}`); //update text
 
@@ -388,6 +391,22 @@ class Level2 extends Phaser.Scene {
             duration: 100
         });
         this.flipVFX.stop();
+
+        this.deathVFX = this.add.particles(0, 0, "circleParticle", {
+            frame: 0,
+            blendMode: 'ADD', 
+            radial: true,
+            angle: {min: 45, max: 135},
+            scale: {start: 0.3, end: 0.1},
+            frequency: 20,
+            maxAliveParticles: 20,
+            lifespan: {min: 500, max: 1000},
+            speed: {min: 100, max: 200},
+            gravityY: 500,
+            alpha: {start: 1, end: 0.5}, 
+            duration: 500
+        });
+        this.deathVFX.stop();
 
         //set to follow player
         this.jumpVFX.startFollow(my.sprite.player, 0, 0, false);
