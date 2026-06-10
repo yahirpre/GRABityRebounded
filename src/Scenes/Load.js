@@ -14,6 +14,7 @@ class Load extends Phaser.Scene {
         this.load.image("tilemap_tiles_black", "monochrome_tilemap_packed.png");                           // Packed tilemap
         this.load.tilemapTiledJSON("level-1", "level-1.tmj");
         this.load.tilemapTiledJSON("level-2", "level-test.tmj");   // Tilemap in JSON
+        this.load.tilemapTiledJSON("level-3", "level-3.tmj");
 
         //load sprite images
         this.load.image("walk1", "player_walk01.png");
@@ -44,7 +45,7 @@ class Load extends Phaser.Scene {
     create() {
         //html text
         document.getElementById('description').innerHTML = '<h2>GRABity!</h2>';
-        document.getElementById('controls').innerHTML = '<h3>Controls:</h3><p>A/D - Left/Right Movement<br>SPACE - Jump/Double Jump<br>Left Click - Flip Gravity (Once until landed)<br>R - Restart Level</p>';
+        document.getElementById('controls').innerHTML = '<h3>Controls:</h3><p>A/D - Left/Right Movement<br>SPACE - Jump/Double Jump<br>Left Click - Flip Gravity (Once until landed)<br>R - Restart Level<br>ESC - Level Selection</p>';
 
         this.anims.create({
             key: 'walk',

@@ -37,6 +37,14 @@
         "level-1.tmj#monochrome_tilemap_transparent_packed": {
             "scaleInDock": 1
         },
+        "level-3.tmj": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 0,
+                "y": 0
+            }
+        },
         "level-test.tmj": {
             "scale": 4.2926,
             "selectedLayer": 2,

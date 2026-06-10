@@ -32,7 +32,7 @@ let config = {
     //CANVAS SIZE (W * H): 20 TILES * 15
     width: 20 * 16 * 3, //SCALE = 3
     height: 15 * 16 * 3,
-    scene: [Load, Start, Credits, Selection, Level1, Level2]
+    scene: [Load, Start, Credits, Selection, Level1, Level2, Level3]
 }
 
 var cursors;
@@ -43,7 +43,7 @@ var my = {sprite: {}, text: {}};
 var levelLocked = {
     "1": false,
     "2": false,
-    "3": true
+    "3": false
 }
 
 var gameCompleted = false;

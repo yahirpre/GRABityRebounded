@@ -25,7 +25,8 @@ class Selection extends Phaser.Scene {
 
         this.drawLevelLink("1", game.config.width/2, game.config.height/2 + 96, "level1Scene");
         this.drawLevelLink("2", game.config.width/2, game.config.height/2 + 120, "level2Scene");
-        this.drawLink("back", game.config.width/2, game.config.height/2 + 144, "startScene");
+        this.drawLevelLink("3", game.config.width/2, game.config.height/2 + 144, "level3Scene");
+        this.drawLink("back", game.config.width/2, game.config.height/2 + 184, "startScene");
 
         //make particles
         this.createParticles();
