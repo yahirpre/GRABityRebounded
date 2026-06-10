@@ -60,7 +60,7 @@ class Selection extends Phaser.Scene {
 
         //on click, go to target
         my.text[text].on('pointerup', (pointer) =>{
-            this.scene.start(target);
+            if(!levelLocked[levelNum]) this.scene.start(target);
         });
 
         //on hover, darken text
