@@ -223,13 +223,9 @@ class Level1 extends Phaser.Scene {
         this.tilesetBlack = this.map.addTilesetImage("monochrome_tilemap_packed", "tilemap_tiles_black");
 
         //BACKGROUNDS
-        // this.bg1Layer = this.map.createLayer("Background1", this.tileset, 0, 0);
-        // this.bg1Layer.setScale(SCALE);
-        // this.bg1Layer.setAlpha(0.25);
-        // this.bg1Layer.setScrollFactor(0.25); //parallax effect
 
-        this.bg1Layer = this.createTileLayer("Background1", this.tilesetBlack, 0.33, 0.5);
-
+        this.bg1Layer = this.createTileLayer("Background", this.tileset, 0.1, 0.5);
+        
         this.platformLayer = this.createTileLayer("Platforms", this.tilesetBlack);
 
         //this.decorLayer = this.createTileLayer("Decor", this.tileset);
