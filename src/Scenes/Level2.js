@@ -12,6 +12,8 @@ class Level2 extends Phaser.Scene {
         this.JUMP_VELOCITY = -700; 
         this.MAX_SPEED = 200;
         this.TERMINAL_VELOCITY = 400;
+        this.SPAWN_X = 80;
+        this.SPAWN_Y = 400;
         this.flipAbility = true; //flipAbility indicates if players are able to flip gravity
         this.lives = 3;
         this.gameRunning = true;
@@ -42,7 +44,7 @@ class Level2 extends Phaser.Scene {
         });
 
         // set up player avatar
-        my.sprite.player = this.physics.add.sprite(80, 400, "idle").setScale(SCALE)
+        my.sprite.player = this.physics.add.sprite(this.SPAWN_X, this.SPAWN_Y, "idle").setScale(SCALE)
         my.sprite.player.setCollideWorldBounds(true);
 
         //set world bounds
@@ -55,8 +57,7 @@ class Level2 extends Phaser.Scene {
         this.physics.add.collider(my.sprite.player, this.platformLayer);
 
         //set up camera
-        this.cameras.main.setBounds(0, 0, this.map.widthInPixels*SCALE, this.map.heightInPixels*SCALE);
-        this.cameras.main.startFollow(my.sprite.player, true, 0.1, 0);
+        this.createCamera();
 
         this.physics.world.drawDebug = false;
         this.physics.world.debugGraphic.clear();
@@ -80,31 +81,7 @@ class Level2 extends Phaser.Scene {
     //particles
     update(){
         if(this.gameRunning){
-            if(this.AKey.isDown){
-                //have the player accelerate to the left
-                my.sprite.player.setAccelerationX(-this.ACCELERATION);
-                
-                my.sprite.player.setFlipX(true);
-                my.sprite.player.anims.play('walk', true);
-                this.walkVFX.start();
-
-            } else if(this.DKey.isDown) {
-                // have the player accelerate to the right
-                my.sprite.player.setAccelerationX(this.ACCELERATION);
-
-                my.sprite.player.setFlipX(false);
-                my.sprite.player.anims.play('walk', true);
-                this.walkVFX.start();
-
-            } else {
-                // set acceleration to 0 and have DRAG take over
-                my.sprite.player.setAccelerationX(0);
-                my.sprite.player.setDragX(this.DRAG);
-                
-                my.sprite.player.anims.play('idle');
-                this.walkVFX.stop();
-            }
-
+            this.handleInput();
 
             //check is no lives left
             if(this.lives < 0){
@@ -112,25 +89,17 @@ class Level2 extends Phaser.Scene {
                 this.endScreen("Game Over!", 3, this.scene.key)
             }
 
-            //if player out of bounds
-            if(my.sprite.player.y > this.map.heightInPixels*SCALE + my.sprite.player.displayHeight/2
-                || my.sprite.player.y < -my.sprite.player.displayHeight/2
-            ){
-                this.playerDead();
-            }
+            //checks if player out of bounds
+            this.handleOutOfBounds();
 
             //level complete
             if(this.grabbedGems == this.totalGems && !this.levelCompleted){
                 this.levelCompleted = true; //prevents this block from being executed more than once
+                levelLocked["3"] = false; //unlock level 3
                 this.time.delayedCall(2000, () => {
                     this.sound.play("levelComplete");
                     this.endScreen("Level Completed!", 3, "selectionScene");
                 })
-            }
-
-            //restart scene
-            if(Phaser.Input.Keyboard.JustDown(this.RKey)){
-                this.endScreen("Restarting!", 1, this.scene.key);
             }
 
             // player jump
@@ -162,12 +131,7 @@ class Level2 extends Phaser.Scene {
             }
 
             //handle TERMINAL_VELOCITY
-            if(!this.gravityFlipped && my.sprite.player.body.velocity.y > this.TERMINAL_VELOCITY){
-                my.sprite.player.setVelocityY(this.TERMINAL_VELOCITY);
-            }
-            else if(this.gravityFlipped && my.sprite.player.body.velocity.y < -this.TERMINAL_VELOCITY){
-                my.sprite.player.setVelocityY(-this.TERMINAL_VELOCITY);
-            }
+            this.handleTerminalVelocity();
 
             //check if player is blocked, if so, reset flipAbility and canDoubleJump
             if(this.playerBlocked()){
@@ -183,8 +147,9 @@ class Level2 extends Phaser.Scene {
         this.physics.world.gravity.y *= -1; //flip gravity
         this.JUMP_VELOCITY *= -1; //flip jump velocity
 
-        //flip VFX
-        this.jumpVFX.setEmitterAngle(-180);
+        //start flipVFX
+        if(this.gravityFlipped) this.flipUpVFX.start();
+        else this.flipDownVFX.start();
         
 
         my.sprite.player.toggleFlipY(); //flip player sprite
@@ -280,6 +245,13 @@ class Level2 extends Phaser.Scene {
         return layer;
     }
 
+    //set up camera
+    createCamera(){
+        this.cameras.main.setBounds(0, 0, this.map.widthInPixels*SCALE, this.map.heightInPixels*SCALE);
+        this.cameras.main.startFollow(my.sprite.player, true, 0.1, 0);
+    }
+
+    //sets up and creates any in game objects like gems and spikes
     createObjects(){
         //make gems
         this.gems = this.map.createFromObjects("Gems", {
@@ -341,6 +313,7 @@ class Level2 extends Phaser.Scene {
         this.spikeGroup = this.add.group(this.spikes);
     }
 
+    //initiates the various particles for the scene like jump particles and walking particles
     createParticles(){
         this.jumpVFX = this.add.particles(0, 0, "circleParticle", {
             frame: 0,
@@ -362,8 +335,8 @@ class Level2 extends Phaser.Scene {
             lifespan:   1000,
             scale:      { start: 0.15, end: 0.05 },
             alpha:      { start: 1.0, end: 0.5 },
-            frequency:  100,                        // One particle every 100 ms
-            emitting:   false,                      // Starts OFF
+            frequency:  100,                        
+            emitting:   false,                      
             blendMode:  "ADD"
         });
 
@@ -383,21 +356,33 @@ class Level2 extends Phaser.Scene {
         });
         this.gemVFX.stop();
 
-        this.flipVFX = this.add.particles(0, 0, "starParticle", {
+        this.flipDownVFX = this.add.particles(0, 0, "circleParticle", {
             frame: 0,
             blendMode: 'ADD',
-            random: true,
             radial: true,
-            angle: {min: 0, max: 360},
-            scale: 0.1,
-            frequency: 1,
-            maxAliveParticles: 10,
+            angle: 90,
+            scale: {start: 0.2, end: 0.05},
+            frequency: 50,
             lifespan: 500,
-            speed: 100,
-            alpha: {start: 0.75, end: 0}, 
-            duration: 100
+            speed: 1000,
+            alpha: 1,
+            duration: 300
         });
-        this.flipVFX.stop();
+        this.flipDownVFX.stop();
+
+        this.flipUpVFX = this.add.particles(0, 0, "circleParticle", {
+            frame: 0,
+            blendMode: 'ADD',
+            radial: true,
+            angle: -90,
+            scale: {start: 0.2, end: 0.05},
+            frequency: 50,
+            lifespan: 500,
+            speed: 1000,
+            alpha: 1,
+            duration: 300
+        });
+        this.flipUpVFX.stop();
 
         this.deathVFX = this.add.particles(0, 0, "circleParticle", {
             frame: 0,
@@ -413,19 +398,24 @@ class Level2 extends Phaser.Scene {
             alpha: {start: 1, end: 0.5}, 
             duration: 500
         });
+
         this.deathVFX.stop();
 
         //set to follow player
         this.jumpVFX.startFollow(my.sprite.player, 0, 0, false);
         this.walkVFX.startFollow(my.sprite.player, 0, 0, false);
+        this.flipDownVFX.startFollow(my.sprite.player, 0, 0, false);
+        this.flipUpVFX.startFollow(my.sprite.player, 0, 0, false);
     }
 
+    //create the input keys and listeners for the scene
     createInput(){
         //keys
         this.AKey = this.input.keyboard.addKey("A"); //left
         this.DKey = this.input.keyboard.addKey("D"); //right
         this.RKey = this.input.keyboard.addKey("R"); //restart scene
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE); //jump
+        this.escapeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC); //level select
 
         // debug key listener (assigned to Q key)
         this.input.keyboard.on('keydown-Q', () => {
@@ -447,6 +437,7 @@ class Level2 extends Phaser.Scene {
         }, this);
     }
 
+    //sets up the player-object overlaps and what to do during overlaps
     createOverlap(){
         //add gem overlap
         this.physics.add.overlap(my.sprite.player, this.gemGroup, (player, gem) => {
@@ -464,6 +455,7 @@ class Level2 extends Phaser.Scene {
         });
     }
 
+    //draws the text UI on screen
     createTextUI(){
         //text
         my.text.gemCount = this.add.bitmapText(10, 10 ,"kenneySquare", `Gems: ${this.grabbedGems} / ${this.totalGems}`);
@@ -471,6 +463,65 @@ class Level2 extends Phaser.Scene {
         my.text.lives = this.add.bitmapText(10, 40 ,"kenneySquare", `Lives: ${this.lives}`);
         my.text.lives.setScrollFactor(0); //stops text from scrolling
 
+    }
+
+    //handles player inputs for keys
+    handleInput(){
+        if(this.AKey.isDown){
+                //have the player accelerate to the left
+                my.sprite.player.setAccelerationX(-this.ACCELERATION);
+                
+                my.sprite.player.setFlipX(true);
+                my.sprite.player.anims.play('walk', true);
+                this.walkVFX.start();
+
+            } else if(this.DKey.isDown) {
+                // have the player accelerate to the right
+                my.sprite.player.setAccelerationX(this.ACCELERATION);
+
+                my.sprite.player.setFlipX(false);
+                my.sprite.player.anims.play('walk', true);
+                this.walkVFX.start();
+
+            } else {
+                // set acceleration to 0 and have DRAG take over
+                my.sprite.player.setAccelerationX(0);
+                my.sprite.player.setDragX(this.DRAG);
+                
+                my.sprite.player.anims.play('idle');
+                this.walkVFX.stop();
+            }
+
+            if(this.escapeKey.isDown){
+                //go to level selection screen
+                this.scene.start("selectionScene");
+            }
+
+            //restart scene
+            if(Phaser.Input.Keyboard.JustDown(this.RKey)){
+                this.endScreen("Restarting!", 1, this.scene.key);
+            }
+    }
+
+    //makes sure player doesnt go past terminal velocity
+    handleTerminalVelocity(){
+        //handle TERMINAL_VELOCITY
+        if(!this.gravityFlipped && my.sprite.player.body.velocity.y > this.TERMINAL_VELOCITY){
+            my.sprite.player.setVelocityY(this.TERMINAL_VELOCITY);
+        }
+        else if(this.gravityFlipped && my.sprite.player.body.velocity.y < -this.TERMINAL_VELOCITY){
+            my.sprite.player.setVelocityY(-this.TERMINAL_VELOCITY);
+        }
+    }
+
+    //checks if player is out of bounds and then kills them if so
+    handleOutOfBounds(){
+            //if player out of bounds
+            if(my.sprite.player.y > this.map.heightInPixels*SCALE + my.sprite.player.displayHeight/2
+                || my.sprite.player.y < -my.sprite.player.displayHeight/2
+            ){
+                this.playerDead();
+            }
     }
 
 }

@@ -37,6 +37,12 @@ let config = {
 
 var cursors;
 const SCALE = 3.0;
-var my = {sprite: {}, text: {}}; 
+var my = {sprite: {}, text: {}};
+
+var levelLocked = {
+    "1": false,
+    "2": true,
+    "3": true
+}
 
 const game = new Phaser.Game(config);
