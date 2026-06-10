@@ -39,6 +39,7 @@ var cursors;
 const SCALE = 3.0;
 var my = {sprite: {}, text: {}};
 
+//map that holds the level number as the key and a boolean representing if it is locked
 var levelLocked = {
     "1": false,
     "2": true,

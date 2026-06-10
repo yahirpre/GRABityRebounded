@@ -356,30 +356,30 @@ class Level1 extends Phaser.Scene {
         });
         this.gemVFX.stop();
 
-        this.flipDownVFX = this.add.particles(0, 0, "circleParticle", {
-            frame: 0,
+        this.flipDownVFX = this.add.particles(0, 0, "tilemap_sheet", {
+            frame: 95,
             blendMode: 'ADD',
             radial: true,
             angle: 90,
-            scale: {start: 0.2, end: 0.05},
-            frequency: 50,
-            lifespan: 500,
-            speed: 1000,
-            alpha: 1,
+            scale: 6,
+            frequency: 200,
+            lifespan: 1000,
+            speed: 800,
+            alpha: 0.5,
             duration: 300
         });
         this.flipDownVFX.stop();
 
-        this.flipUpVFX = this.add.particles(0, 0, "circleParticle", {
-            frame: 0,
+        this.flipUpVFX = this.add.particles(0, 0, "tilemap_sheet", {
+            frame: 94,
             blendMode: 'ADD',
             radial: true,
             angle: -90,
-            scale: {start: 0.2, end: 0.05},
-            frequency: 50,
-            lifespan: 500,
-            speed: 1000,
-            alpha: 1,
+            scale: 6,
+            frequency: 200,
+            lifespan: 1000,
+            speed: 800,
+            alpha: 0.5,
             duration: 300
         });
         this.flipUpVFX.stop();
