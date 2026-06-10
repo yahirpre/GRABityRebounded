@@ -46,4 +46,6 @@ var levelLocked = {
     "3": true
 }
 
+var gameCompleted = false;
+
 const game = new Phaser.Game(config);

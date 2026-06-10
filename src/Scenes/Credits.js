@@ -19,6 +19,11 @@ class Credits extends Phaser.Scene {
 
         this.drawLink("back", game.config.width/2, game.config.height/2 + 168, "startScene");
 
+        //make particles
+        this.createParticles();
+
+        //start particles if player has completed the game
+        if(gameCompleted) this.confettiVFX.start();
     }
 
     update(){
@@ -46,6 +51,25 @@ class Credits extends Phaser.Scene {
         //on unhover, reset text
         my.text[text].on('pointerout', (pointer) =>{
             my.text[text].setAlpha(1);
+        });
+    }
+
+    //makes confetti particles
+    createParticles(){
+
+        this.confettiVFX = this.add.particles(0, 0, "starParticle", {
+            frame: 0,
+            blendMode: 'ADD', 
+            radial: true,
+            x: {min: 0, max: game.config.width},
+            angle: 90,
+            scale: {start: 0.1, end: 0.01},
+            frequency: 50,
+            lifespan: {min: 1000, max: 3000},
+            speed: 100,
+            gravityY: 300,
+            alpha: {start: 1, end: 0.5},
+            emitting: false
         });
     }
 
