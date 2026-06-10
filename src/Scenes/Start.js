@@ -32,7 +32,10 @@ class Start extends Phaser.Scene {
     update(){
         
     }
-
+    
+    //text: the text to be drawn
+    //x, y: integers representing the x and y position for the text
+    // target: the key for the target scene
     drawLink(text, x, y, target){
         my.text[text] = this.add.bitmapText(x, y,"kenneySquare", text, 24).setOrigin(0.5);
         my.text[text].setInteractive();

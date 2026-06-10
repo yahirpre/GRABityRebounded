@@ -32,7 +32,9 @@ class Selection extends Phaser.Scene {
     update(){
         
     }
-
+    //text: the text to be drawn
+    //x, y: integers representing the x and y position for the text
+    // target: the key for the target scene
     drawLink(text, x, y, target){
         my.text[text] = this.add.bitmapText(x, y,"kenneySquare", text, 24).setOrigin(0.5);
         my.text[text].setInteractive();
@@ -56,7 +58,7 @@ class Selection extends Phaser.Scene {
     
     //levelnum: a string with one characted representing the level number i.e. "2" for level 2
     //x, y: integers representing the x and y position for the text
-    // 
+    // target: the key for the target scene
     drawLevelLink(levelNum, x, y, target){
         let text = levelLocked[levelNum] ? `Level ${levelNum} (locked)` : `Level ${levelNum}`;
         my.text[text] = this.add.bitmapText(x, y,"kenneySquare", text, 24).setOrigin(0.5);
