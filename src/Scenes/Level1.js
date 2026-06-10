@@ -225,10 +225,10 @@ class Level1 extends Phaser.Scene {
         //BACKGROUNDS
 
         this.bg1Layer = this.createTileLayer("Background", this.tileset, 0.1, 0.5);
-        
+
         this.platformLayer = this.createTileLayer("Platforms", this.tilesetBlack);
 
-        //this.decorLayer = this.createTileLayer("Decor", this.tileset);
+        this.decorLayer = this.createTileLayer("Decor", this.tileset);
     }
     //returns a set-up tile layer from tilemap using the name and the tileset used
     createTileLayer(name, tileset, alpha = 1, scrollFactor = 1){
