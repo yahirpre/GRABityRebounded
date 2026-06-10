@@ -40,6 +40,7 @@ class Selection extends Phaser.Scene {
         //on click, go to target
         my.text[text].on('pointerup', (pointer) =>{
             this.scene.start(target);
+            this.sound.play("jump");
         });
 
         //on hover, darken text
@@ -61,9 +62,16 @@ class Selection extends Phaser.Scene {
         my.text[text] = this.add.bitmapText(x, y,"kenneySquare", text, 24).setOrigin(0.5);
         my.text[text].setInteractive();
 
-        //on click, go to target
+        //on click, go to target level
         my.text[text].on('pointerup', (pointer) =>{
-            if(!levelLocked[levelNum]) this.scene.start(target);
+            //only go to target level if level isn't locked
+            if(!levelLocked[levelNum]){
+                this.sound.play("jump");
+                this.scene.start(target);
+            }
+            else{
+
+            }
         });
 
         //on hover, darken text

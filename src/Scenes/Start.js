@@ -40,6 +40,7 @@ class Start extends Phaser.Scene {
         //on click, go to target
         my.text[text].on('pointerup', (pointer) =>{
             this.scene.start(target);
+            this.sound.play("jump");
         });
 
         //on hover, darken text
