@@ -43,7 +43,7 @@ var my = {sprite: {}, text: {}};
 var levelLocked = {
     "1": false,
     "2": true,
-    "3": false
+    "3": true
 }
 
 var gameCompleted = false;
