@@ -1,5 +1,5 @@
 {
-    "activeFile": "",
+    "activeFile": "level-1.tmj",
     "expandedProjectPaths": [
         "."
     ],
@@ -38,19 +38,26 @@
             "scaleInDock": 1
         },
         "level-3.tmj": {
-            "scale": 1,
-            "selectedLayer": 0,
+            "scale": 3,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 0,
-                "y": 0
+                "x": 520,
+                "y": 215.99999999999997
             }
         },
+        "level-3.tmj#monochrome_tilemap_packed": {
+            "scaleInDock": 3,
+            "scaleInEditor": 1
+        },
+        "level-3.tmj#monochrome_tilemap_transparent_packed": {
+            "scaleInDock": 1
+        },
         "level-test.tmj": {
-            "scale": 4.2926,
+            "scale": 0.5,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 34.47793877836277,
-                "y": 191.95825373899265
+                "x": 720,
+                "y": 412
             }
         },
         "level-test.tmj#monochrome_tilemap_packed": {
@@ -74,12 +81,16 @@
     "map.tileWidth": 16,
     "map.width": 80,
     "openFiles": [
-        "level-test.tmj"
+        "level-test.tmj",
+        "level-1.tmj",
+        "level-3.tmj"
     ],
     "project": "yahirPlatformer.tiled-project",
     "property.type": "bool",
     "recentFiles": [
         "level-test.tmj",
+        "level-3.tmj",
+        "level-1.tmj",
         "C:/Users/Yahir Prenger/Documents/GitHub/PlatformImprovement/assets/platformer-level-1.tmj"
     ],
     "tileset.embedInMap": true,

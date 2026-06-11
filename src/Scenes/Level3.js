@@ -13,7 +13,7 @@ class Level3 extends Phaser.Scene {
         this.MAX_SPEED = 200;
         this.TERMINAL_VELOCITY = 400;
         this.SPAWN_X = 80;
-        this.SPAWN_Y = 400;
+        this.SPAWN_Y = 300;
         this.flipAbility = true; //flipAbility indicates if players are able to flip gravity
         this.lives = 3;
         this.gameRunning = true;
@@ -169,7 +169,7 @@ class Level3 extends Phaser.Scene {
         my.text.lives.setText(`Lives: ${this.lives}`); //update text
 
         //reset player
-        my.sprite.player.setPosition(80,400);
+        my.sprite.player.setPosition(this.SPAWN_X,this.SPAWN_Y);
         my.sprite.player.setVelocity(0);
 
         //reset gravity
@@ -214,7 +214,7 @@ class Level3 extends Phaser.Scene {
     createMap(){
         // Create a new tilemap game object which uses 16x16 pixel tiles, and is
         // 60 tiles wide and 15 tiles tall.
-        this.map = this.add.tilemap("level-2", 16, 16, 60, 15);
+        this.map = this.add.tilemap("level-3", 16, 16, 60, 15);
 
         // Add a tileset to the map
         // First parameter: name we gave the tileset in Tiled
@@ -272,7 +272,6 @@ class Level3 extends Phaser.Scene {
         });
         this.gemGroup = this.add.group(this.gems);
         this.totalGems = this.gemGroup.getLength();
-        this.totalGems = 1;
         this.grabbedGems = 0;
         //animations for gems
         this.anims.create({
@@ -294,7 +293,7 @@ class Level3 extends Phaser.Scene {
         this.spikes = this.map.createFromObjects("Spikes", {
             name: "Spike",
             key: "tilemap_sheet", 
-            frame: 166
+            frame: 183
         });
         this.physics.world.enable(this.spikes, Phaser.Physics.Arcade.STATIC_BODY);
         //scale up and reposition
@@ -312,6 +311,46 @@ class Level3 extends Phaser.Scene {
         });
 
         this.spikeGroup = this.add.group(this.spikes);
+
+        //make static enemies
+        this.staticEnem = this.map.createFromObjects("StaticEnemies", {
+            name: "StaticEnemy",
+            key: "tilemap_sheet", 
+            frame: 381
+        });
+
+        //animations for staticEnemy
+        this.anims.create({
+            key: 'staticEnemAnim', // Animation key
+            frames: this.anims.generateFrameNumbers('tilemap_sheet', 
+                {
+                    prefix: '',
+                    suffix: '',
+                    zeroPad: 0,
+                    frames: [380,381]
+                    // outputArray: [], // Append frames into this array
+                }),
+            frameRate: 16,  // Higher is faster
+            repeat: -1      // Loop the animation indefinitely
+        });
+        this.anims.play('staticEnemAnim', this.staticEnem);
+
+        this.physics.world.enable(this.staticEnem, Phaser.Physics.Arcade.STATIC_BODY);
+        //scale up and reposition
+        this.staticEnem.forEach(enem => {
+            enem.setScale(SCALE);
+
+            // scale position to match scaled map
+            enem.x *= SCALE;
+            enem.y *= SCALE;
+            enem.body.updateFromGameObject();
+
+            //scale down hitbox
+            enem.body.setSize(enem.width*SCALE*0.5, enem.height*SCALE*0.5, true);
+            enem.body.setOffset(4*SCALE,4*SCALE);
+        });
+
+        this.staticEnemGroup = this.add.group(this.staticEnem);
     }
 
     //initiates the various particles for the scene like jump particles and walking particles
@@ -452,6 +491,11 @@ createParticles(){
 
         //add spike overlap
         this.physics.add.overlap(my.sprite.player, this.spikeGroup, (obj1, obj2) => {
+            this.playerDead();
+        });
+
+        //add enemy overlap
+        this.physics.add.overlap(my.sprite.player, this.staticEnemGroup, (obj1, obj2) => {
             this.playerDead();
         });
     }

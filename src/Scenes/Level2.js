@@ -169,7 +169,7 @@ class Level2 extends Phaser.Scene {
         my.text.lives.setText(`Lives: ${this.lives}`); //update text
 
         //reset player
-        my.sprite.player.setPosition(80,400);
+        my.sprite.player.setPosition(this.SPAWN_X,this.SPAWN_Y);
         my.sprite.player.setVelocity(0);
 
         //reset gravity
