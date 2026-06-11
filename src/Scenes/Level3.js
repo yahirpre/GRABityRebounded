@@ -228,7 +228,7 @@ class Level3 extends Phaser.Scene {
         // this.bg1Layer.setAlpha(0.25);
         // this.bg1Layer.setScrollFactor(0.25); //parallax effect
 
-        this.bg2Layer = this.createTileLayer("Background2", this.tilesetBlack, 0.33, 0.5);
+        this.bg2Layer = this.createTileLayer("Background2", this.tileset, 0.25, 0.5);
 
         this.platformLayer = this.createTileLayer("Platforms", this.tilesetBlack);
 

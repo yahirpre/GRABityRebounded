@@ -78,7 +78,7 @@ class Selection extends Phaser.Scene {
                 this.scene.start(target);
             }
             else{
-
+                this.sound.play("death");
             }
         });
 
