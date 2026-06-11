@@ -33,6 +33,16 @@ class Start extends Phaser.Scene {
         //start particles if player has completed the game
         if(gameCompleted) this.confettiVFX.start();
 
+        //start music
+        this.bgMusic = this.sound.add("bgMusic",
+            {
+                volume: 0.25,
+                loop: true
+            }
+        );
+        this.bgMusic.play();
+
+
     }
 
     update(){

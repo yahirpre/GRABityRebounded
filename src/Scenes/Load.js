@@ -33,6 +33,7 @@ class Load extends Phaser.Scene {
         this.load.audio("death", "lowDown.ogg");
         this.load.audio("levelComplete", "powerUp1.ogg");
         this.load.audio("gemGrab", "powerUp6.ogg");
+        this.load.audio("bgMusic", "solarflex-space.mp3");
 
         this.load.spritesheet("tilemap_sheet", "monochrome_tilemap_transparent_packed.png", {
             frameWidth: 16,
